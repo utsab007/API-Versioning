@@ -4,12 +4,15 @@ using Web_API_Versioning.API.Models.DTOs;
 
 namespace Web_API_Versioning.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class CountriesController : ControllerBase
     {
+        [MapToApiVersion("1.0")]
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetV1()
         {
             var countries = CountriesData.GetCountries();
 
@@ -22,6 +25,28 @@ namespace Web_API_Versioning.API.Controllers
                 {
                     Id = country.Id,
                     Name = country.Name
+                });
+            }
+
+            return Ok(countryDtoList);
+
+        }
+
+        [MapToApiVersion("2.0")]
+        [HttpGet]
+        public IActionResult GetV2()
+        {
+            var countries = CountriesData.GetCountries();
+
+            var countryDtoList = new List<CountryDtoV2>();
+
+
+            foreach (var country in countries)
+            {
+                countryDtoList.Add(new CountryDtoV2
+                {
+                    Id = country.Id,
+                    countryName = country.Name
                 });
             }
 
